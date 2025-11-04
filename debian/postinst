@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ "$1" = "configure" ]; then
+	echo install dkms modules for all kernels
+	export autoinstall_all_kernels=1
+fi
+
+#DEBHELPER#
+# Update initramfs on package configuration
+case "$1" in
+	configure)
+		depmod -a
+		update-initramfs -u
+esac

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#DEBHELPER#
+# Update initramfs on package remove
+case "$1" in
+	remove)
+		depmod -a
+		update-initramfs -u
+esac

@@ -5,6 +5,29 @@ on:
   push:
 
 jobs:
+  packaging-debian:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential devscripts dh-make dh-dkms dkms
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        path: tc956x-dkms
+    - name: Packaging
+      working-directory: tc956x-dkms
+      run: | 
+        LATEST_VERSION=$(grep "^PACKAGE_VERSION" "dkms.conf" | sed 's/.*\?"\([^"]*\)".*/\1/')
+        sed -i "s/###LATEST_VERSION###/$LATEST_VERSION/g" debian/control debian/changelog
+        dpkg-buildpackage -b -tc -us -uc
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: debain-package
+        path: "*.deb"
+
   test-archlinux-lts:
     runs-on: ubuntu-latest
     container:

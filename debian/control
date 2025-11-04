@@ -1,0 +1,17 @@
+Source: tc956x-dkms
+Section: kernel
+Priority: optional
+Maintainer: Xilin Wu <wuxilin123@gmail.com>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13), dh-sequence-dkms
+Standards-Version: ###LATEST_VERSION###
+Homepage: https://github.com/strongtz/tc956x-dkms
+
+Package: tc956x-dkms
+Architecture: any
+Depends:
+ ${misc:Depends}, build-essential
+Description: Toshiba TC956X (Qualcomm QPS615) PCIe Ethernet Driver dkms package
+ This package provides the dkms source code for Toshiba
+ TC956X PCIe Ethernet Host Driver.
