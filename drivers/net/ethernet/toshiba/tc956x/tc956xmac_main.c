@@ -4180,74 +4180,6 @@ eee_exit_err:
 }
 #endif
 
-static void tc956x_ipg_config(struct tc956xmac_priv *priv, u32 ipg) {
-	bool program_ipg = false;
-	u32 ipg_field = 0;
-	u32 eipg_field = 0;
-
-	if (ipg) {
-		u32 ipg_bits = ipg * 8;
-
-		if (ipg_bits >= 96) {
-			u32 delta = ipg_bits - 96;
-
-			if ((delta % 32) == 0) {
-				u32 steps = delta / 32;
-
-				if (steps <= 0x3FF) {
-					ipg_field = steps & GENMASK(2, 0);
-					eipg_field = (steps >> 3) & GENMASK(6, 0);
-					program_ipg = true;
-				}
-			}
-		}
-	}
-
-	if (program_ipg) {
-		u32 tx_cfg = readl(priv->ioaddr + XGMAC_TX_CONFIG);
-
-		tx_cfg &= ~XGMAC_CONFIG_IPG;
-		tx_cfg |= ipg_field << XGMAC_CONFIG_IPG_SHIFT;
-		tx_cfg |= XGMAC_CONFIG_IFP;
-
-		u32 ext_cfg = readl(priv->ioaddr + XGMAC_EXTENDED_REG);
-
-		ext_cfg &= ~XGMAC_EXT_CONFIG_EIPG;
-		ext_cfg |= eipg_field << XGMAC_EXT_CONFIG_EIPG_SHIFT;
-
-		writel(tx_cfg, priv->ioaddr + XGMAC_TX_CONFIG);
-		writel(ext_cfg, priv->ioaddr + XGMAC_EXTENDED_REG);
-
-		KPRINT_ERR("ipg_field: 0x%x, eipg_field: 0x%x\n", ipg_field, eipg_field);
-		KPRINT_ERR("TX Config: 0x%x, EXT Config: 0x%x\n", tx_cfg, ext_cfg);
-
-		udelay(1000);
-		u32 tx_cfg_readback = readl(priv->ioaddr + XGMAC_TX_CONFIG);
-		KPRINT_ERR("TX Config readback: 0x%x\n", tx_cfg_readback);
-		u32 ext_cfg_readback = readl(priv->ioaddr + XGMAC_EXTENDED_REG);
-		KPRINT_ERR("EXT Config readback: 0x%x\n", ext_cfg_readback);
-	}
-}
-
-static void tc956x_isr_config(struct tc956xmac_priv *priv, u32 isr_bytes) {
-	if (isr_bytes > 0x3FF) return;
-
-	if (isr_bytes > 0) {
-		u32 tx_cfg = readl(priv->ioaddr + XGMAC_TX_CONFIG);
-
-		tx_cfg &= ~XGMAC_CONFIG_ISR;
-		tx_cfg |= isr_bytes << XGMAC_CONFIG_ISR_SHIFT;
-
-		writel(tx_cfg, priv->ioaddr + XGMAC_TX_CONFIG);
-
-		tx_cfg = readl(priv->ioaddr + XGMAC_TX_CONFIG);
-		tx_cfg |= XGMAC_CONFIG_ISM;
-		writel(tx_cfg, priv->ioaddr + XGMAC_TX_CONFIG);
-
-		KPRINT_ERR("TX Config: 0x%x\n", tx_cfg);
-	}
-}
-
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
 static void tc956xmac_mac_link_up(struct phylink_config *config,
 				   struct phy_device *phy,
@@ -4300,30 +4232,6 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 		priv->flow_ctrl = FLOW_OFF;
 
 	tc956xmac_mac_flow_ctrl(priv, duplex);
-
-	// if (priv->port_interface == ENABLE_XFI_INTERFACE && duplex) {
-	// 	u32 ipg_cfg_bytes = 0;
-	// 	switch (speed) {
-	// 		case SPEED_10000:
-	// 			ipg_cfg_bytes = 12;
-	// 			break;
-	// 		case SPEED_5000:
-	// 			ipg_cfg_bytes = 88;
-	// 			break;
-	// 		case SPEED_2500:
-	// 			ipg_cfg_bytes = 248;
-	// 			break;
-	// 		case SPEED_1000:
-	// 			// ipg_cfg_bytes = 4104;
-	// 			ipg_cfg_bytes = 748;
-	// 			break;
-	// 		default:
-	// 			break;
-	// 	}
-	// 	if (ipg_cfg_bytes) {
-	// 		tc956x_ipg_config(priv, ipg_cfg_bytes);
-	// 	}
-	// }
 
 	if (config_done) {
 		writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
@@ -7136,8 +7044,6 @@ static int tc956xmac_hw_setup(struct net_device *dev, bool init_ptp)
 #endif
 #endif
 
-	// tc956x_ipg_config(priv, 4104);
-	// tc956x_isr_config(priv, 748);
 	/* Initialize MTL*/
 	tc956xmac_mtl_configuration(priv);
 
