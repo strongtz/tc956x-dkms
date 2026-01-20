@@ -1,0 +1,24 @@
+# Build files
+*.mod
+*.mod.c
+*.o
+*.ko
+*.a
+*.cmd
+Module.symvers
+modules.order
+
+# Pacman package
+/src
+/pkg
+*.pkg.tar.*
+
+# Debian package
+debian/tmp/
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/*.substvars
+debian/*/
+!debian/source/
+*.deb
