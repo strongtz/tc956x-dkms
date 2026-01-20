@@ -4524,8 +4524,12 @@ static int tc956xmac_init_phy(struct net_device *dev)
 			msleep(50);
 
 			/* Trigger device reprobe to match with newly loaded driver */
-			device_reprobe(&phydev->mdio.dev);
-			
+			ret = device_reprobe(&phydev->mdio.dev);
+			if (ret != 0) {
+				netdev_dbg(priv->dev, "PHY driver reprobe failed: %d\n", ret);
+				continue;
+			}
+
 			if (phydev->drv) {
 				netdev_info(priv->dev, "PHY driver successfully bound: %s\n", 
 					    phydev->drv->name);
