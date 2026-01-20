@@ -1279,7 +1279,7 @@ RXQ1 used for MAC2MAC */
 #define TC956X_TARGET_PTP_CLK	50000000
 
 /* Debug prints */
-#define NMSGPR_INFO(dev, x...)		dev_info(dev, x)
+#define NMSGPR_INFO(dev, x...)		dev_dbg(dev, x)
 #define NMSGPR_ALERT(dev, x...)		dev_alert(dev, x)
 #define NMSGPR_ERR(dev, x...)		dev_err(dev, x)
 
@@ -1345,12 +1345,12 @@ RXQ1 used for MAC2MAC */
 
 
 /* Debug prints */
-#define NMSGPR_INFO(dev, x...)  dev_info(dev, x)
+#define NMSGPR_INFO(dev, x...)  dev_dbg(dev, x)
 #define NMSGPR_ALERT(dev, x...) dev_alert(dev, x)
 #define NMSGPR_ERR(dev, x...)   dev_err(dev, x)
 
 #ifdef TC956X_DBG_FUNC
-#define DBGPR_FUNC(dev, x...) dev_info(dev, x)
+#define DBGPR_FUNC(dev, x...) dev_dbg(dev, x)
 #else
 #define DBGPR_FUNC(dev, x...) do { } while (0)
 #endif
