@@ -1300,25 +1300,25 @@ RXQ1 used for MAC2MAC */
 #ifdef TC956X_DBG_PTP
 #define DBGPR_FUNC_PTP(x...)	pr_alert(x)
 #else
-#define DBGPR_FUNC_PTP(x...)	do { } while (0)
+#define DBGPR_FUNC_PTP(x...)	do { if (0) pr_alert(x); } while (0)
 #endif
 
 #ifdef TC956X_DBG_TSN
 #define DBGPR_FUNC_TSN(x...)	pr_alert(x)
 #else
-#define DBGPR_FUNC_TSN(x...)	do { } while (0)
+#define DBGPR_FUNC_TSN(x...)	do { if (0) pr_alert(x); } while (0)
 #endif
 
 #ifdef TC956X_DBG_MDIO
 #define DBGPR_FUNC_MDIO(x...)	pr_alert(x)
 #else
-#define DBGPR_FUNC_MDIO(x...)	do { } while (0)
+#define DBGPR_FUNC_MDIO(x...)	do { if (0) pr_alert(x); } while (0)
 #endif
 
 #ifdef TC956X_DBG_ETHTOOL
 #define DBGPR_FUNC_ETHTOOL(x...)	pr_alert(x)
 #else
-#define DBGPR_FUNC_ETHTOOL(x...)	do { } while (0)
+#define DBGPR_FUNC_ETHTOOL(x...)	do { if (0) pr_alert(x); } while (0)
 #endif
 
 #ifdef TC956X_SRIOV_VF
@@ -1352,73 +1352,73 @@ RXQ1 used for MAC2MAC */
 #ifdef TC956X_DBG_FUNC
 #define DBGPR_FUNC(dev, x...) dev_dbg(dev, x)
 #else
-#define DBGPR_FUNC(dev, x...) do { } while (0)
+#define DBGPR_FUNC(dev, x...) do { if (0) dev_dbg(dev, x); } while (0)
 #endif
 #ifdef TC956X_TEST
 #define DBGPR_TEST(dev, x...) dev_alert(dev, x)
 #else
-#define DBGPR_TEST(dev, x...) do { } while (0)
+#define DBGPR_TEST(dev, x...) do { if (0) dev_alert(dev, x); } while (0)
 #endif
 
 #ifdef TC956X_DBG_L1
 #define NDBGPR_L1(dev, x...) dev_dbg(dev, x)
 #else
-#define NDBGPR_L1(dev, x...) do { } while (0)
+#define NDBGPR_L1(dev, x...) do { if (0) dev_dbg(dev, x); } while (0)
 #endif
 
 #ifdef TC956X_DBG_L2
 #define NDBGPR_L2(dev, x...) dev_dbg(dev, x)
 #else
-#define NDBGPR_L2(dev, x...) do { } while (0)
+#define NDBGPR_L2(dev, x...) do { if (0) dev_dbg(dev, x); } while (0)
 #endif
 
 /* Kernel Print without dev */
 #ifdef TC956X_KPRINT_DEBUG_L2
 #define KPRINT_DEBUG2(x...) printk(KERN_DEBUG x)
 #else
-#define KPRINT_DEBUG2(x...) do { } while (0)
+#define KPRINT_DEBUG2(x...) do { if (0) printk(KERN_DEBUG x); } while (0)
 #endif
 
 #ifdef TC956X_KPRINT_DEBUG_L1
 #define KPRINT_DEBUG1(x...) printk(KERN_DEBUG x)
 #else
-#define KPRINT_DEBUG1(x...) do { } while (0)
+#define KPRINT_DEBUG1(x...) do { if (0) printk(KERN_DEBUG x); } while (0)
 #endif
 
 #ifdef TC956X_KPRINT_INFO
 #define KPRINT_INFO(x...) printk(KERN_INFO x)
 #else
-#define KPRINT_INFO(x...) do { } while (0)
+#define KPRINT_INFO(x...) do { if (0) printk(KERN_INFO x); } while (0)
 #endif
 
 #ifdef TC956X_KPRINT_NOTICE
 #define KPRINT_NOTICE(x...) printk(KERN_NOTICE x)
 #else
-#define KPRINT_NOTICE(x...) do { } while (0)
+#define KPRINT_NOTICE(x...) do { if (0) printk(KERN_NOTICE x); } while (0)
 #endif
 
 #ifdef TC956X_KPRINT_WARNING
 #define KPRINT_WARNING(x...) printk(KERN_WARNING x)
 #else
-#define KPRINT_WARNING(x...) do { } while (0)
+#define KPRINT_WARNING(x...) do { if (0) printk(KERN_WARNING x); } while (0)
 #endif
 
 #ifdef TC956X_KPRINT_ERR
 #define KPRINT_ERR(x...) printk(KERN_ERR x)
 #else
-#define KPRINT_ERR(x...) do { } while (0)
+#define KPRINT_ERR(x...) do { if (0) printk(KERN_ERR x); } while (0)
 #endif
 
 #ifdef TC956X_KPRINT_CRIT
 #define KPRINT_CRIT(x...) printk(KERN_CRIT x)
 #else
-#define KPRINT_CRIT(x...) do { } while (0)
+#define KPRINT_CRIT(x...) do { if (0) printk(KERN_CRIT x); } while (0)
 #endif
 
 #ifdef TC956X_KPRINT_ALERT
 #define KPRINT_ALERT(x...) printk(KERN_ALERT x)
 #else
-#define KPRINT_ALERT(x...) do { } while (0)
+#define KPRINT_ALERT(x...) do { if (0) printk(KERN_ALERT x); } while (0)
 #endif
 
 
