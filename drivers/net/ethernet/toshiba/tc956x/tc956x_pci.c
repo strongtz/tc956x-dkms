@@ -2959,17 +2959,17 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 	/* Enable the bus mastering */
 	pci_set_master(pdev);
 
-	dev_info(&(pdev->dev),
+	dev_dbg(&(pdev->dev),
 		"BAR0 length = %lld bytes\n", (u64)pci_resource_len(pdev, 0));
-	dev_info(&(pdev->dev),
+	dev_dbg(&(pdev->dev),
 		"BAR2 length = %lld bytes\n", (u64)pci_resource_len(pdev, 2));
-	dev_info(&(pdev->dev),
+	dev_dbg(&(pdev->dev),
 		"BAR4 length = %lld bytes\n", (u64)pci_resource_len(pdev, 4));
-	dev_info(&(pdev->dev),
+	dev_dbg(&(pdev->dev),
 		"BAR0 physical address = 0x%llx\n", (u64)pci_resource_start(pdev, 0));
-	dev_info(&(pdev->dev),
+	dev_dbg(&(pdev->dev),
 		"BAR2 physical address = 0x%llx\n", (u64)pci_resource_start(pdev, 2));
-	dev_info(&(pdev->dev),
+	dev_dbg(&(pdev->dev),
 		"BAR4 physical address = 0x%llx\n", (u64)pci_resource_start(pdev, 4));
 
 #ifdef TC956X
@@ -3073,7 +3073,7 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 
 	/* Get the device index by comparing the user passed BDF (module param) with actual BDF */
 	res.device_num = get_tc956x_index(pdev);
-	dev_info(&(pdev->dev), "tc956x_eth_ports_bdf matched device index for this device is: %d and Port number: %d\n", res.device_num, res.port_num);
+	dev_dbg(&(pdev->dev), "tc956x_eth_ports_bdf matched device index for this device is: %d and Port number: %d\n", res.device_num, res.port_num);
 
 	/*
 	 * Convenience for probe-order mode:
@@ -3092,9 +3092,9 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 	if (res.device_num == 0xFF) {
 		res.device_num = (TC956X_TOT_CASCADE_DEV*2); /* Use the slot at the end of array for non-matching devices */
 
-		dev_info(&(pdev->dev), "Error: Module parameter tc956x_eth_ports_bdf not provided or\
-			value provided in module param not matching with the device BDF.\
-			Use the device number as %d and set other associated module parameter values to default\n", res.device_num);
+		dev_dbg(&(pdev->dev), "Error: Module parameter tc956x_eth_ports_bdf not provided or "
+			"value provided in module param not matching with the device BDF. "
+			"Use the device number as %d and set other associated module parameter values to default\n", res.device_num);
 
 
 		// macX_interface[res.device_num]					= ENABLE_USXGMII_10G_INTERFACE;
