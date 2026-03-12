@@ -4,7 +4,7 @@
  * tc956xmac_main.c
  *
  * Copyright(C) 2007-2011 STMicroelectronics Ltd
- * Copyright (C) 2025 Toshiba Electronic Devices & Storage Corporation
+ * Copyright (C) 2026 Toshiba Electronic Devices & Storage Corporation
  *
  * This file has been derived from the STMicro Linux driver,
  * and developed or modified for TC956X.
@@ -188,6 +188,8 @@
  *  VERSION     : 05-02-00
  *  31 Mar 2025 : 1. Support for 3MA/3DB environment
  *  VERSION     : 06-00-00
+ *  12 Mar 2026 : 1. Fixed compilation issue for disable of CONFIG_PCI_IOV macro
+ *  VERSION     : 06-00-01
  */
 
 #include <linux/clk.h>
@@ -15212,7 +15214,9 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 	priv->pause = pause;
 	priv->plat = plat_dat;
 #ifdef TC956X_SRIOV_PF
+#ifdef CONFIG_PCI_IOV
 	priv->sriov_enabled = res->sriov_enabled;
+#endif
 #endif
 #ifdef TC956X
 	priv->tc956x_SFR_pci_base_addr = res->tc956x_SFR_pci_base_addr;

@@ -4,7 +4,7 @@
  * tc956x_pci.c
  *
  * Copyright (C) 2011-2012  Vayavya Labs Pvt Ltd
- * Copyright (C) 2025 Toshiba Electronic Devices & Storage Corporation
+ * Copyright (C) 2026 Toshiba Electronic Devices & Storage Corporation
  *
  * This file has been derived from the STMicro and Synopsys Linux driver,
  * and developed or modified for TC956X.
@@ -221,6 +221,9 @@
  *  VERSION     : 05-02-00
  *  31 Mar 2025 : 1. Version update
  *  VERSION     : 06-00-00
+ *  12 Mar 2026 : 1. Fixed compilation issue for disable of CONFIG_PCI_IOV macro
+ *                2. Version update
+ *  VERSION     : 06-00-01
  */
 
 #include <linux/clk-provider.h>
@@ -576,7 +579,7 @@ static unsigned int mac1_axi_rd_osr_lmt = 31;
 
 static unsigned int mac0_axi_blen;
 static unsigned int mac1_axi_blen;
-static const struct tc956x_version tc956x_drv_version = {0, 6, 0, 0, 0, 0};
+static const struct tc956x_version tc956x_drv_version = {0, 6, 0, 0, 0, 1};
 int tc956xmac_pm_usage_counter; /* Device Usage Counter */
 int tc956x_dsp_count;
 #ifdef TC956X_SRIOV_PF
@@ -2892,12 +2895,13 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 	}
 	memset(&res, 0, sizeof(res));
 #if defined(TC956X_SRIOV_PF) && (defined(TC956X_AUTOMOTIVE_CONFIG) || defined(TC956X_ENABLE_MAC2MAC_BRIDGE) || defined(TC956X_CPE_CONFIG))
+#ifdef CONFIG_PCI_IOV
 	if (tc956x_no_of_vf > 0) {
 		tc956x_no_of_vf = 0;
 		NMSGPR_INFO(&(pdev->dev),
 		"Enabling SRIOV not allowed in Automotive configuration\n");
 	}
-
+#endif
 #endif
 	res.probe_seq_no = tc956xmac_pm_usage_counter;
 #ifdef TC956X_SRIOV_PF
