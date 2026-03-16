@@ -50,7 +50,8 @@ jobs:
           CONFIG_TC956X_PF=y \
           CONFIG_TC956X_VF=n \
           CONFIG_TC956X_PCIE_GEN3_SETTING=y \
-          CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y
+          CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y \
+          CONFIG_TC956X_PLATFORM_SUPPORT=y
 
   test-archlinux-lts66:
     runs-on: ubuntu-latest
@@ -80,7 +81,8 @@ jobs:
           CONFIG_TC956X_PF=y \
           CONFIG_TC956X_VF=n \
           CONFIG_TC956X_PCIE_GEN3_SETTING=y \
-          CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y
+          CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y \
+          CONFIG_TC956X_PLATFORM_SUPPORT=y
 
   test-archlinux-lts61:
     runs-on: ubuntu-latest
@@ -110,7 +112,8 @@ jobs:
           CONFIG_TC956X_PF=y \
           CONFIG_TC956X_VF=n \
           CONFIG_TC956X_PCIE_GEN3_SETTING=y \
-          CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y
+          CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y \
+          CONFIG_TC956X_PLATFORM_SUPPORT=y
 
   test-archlinux:
     runs-on: ubuntu-latest
@@ -135,4 +138,5 @@ jobs:
           CONFIG_TC956X_PF=y \
           CONFIG_TC956X_VF=n \
           CONFIG_TC956X_PCIE_GEN3_SETTING=y \
-          CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y
+          CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y \
+          CONFIG_TC956X_PLATFORM_SUPPORT=y

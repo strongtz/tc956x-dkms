@@ -15075,45 +15075,7 @@ static int validate_rsc_mgr_alloc(struct tc956xmac_priv *priv, struct net_device
 	return ret;
 }
 #endif
-/**
- * tc956x_platform_probe
- * @priv: driver private structure
- * @res: tc956xmac resource pointer
- * Description: this is the platform specific function
- * returns 0 on success
- */
-int tc956x_platform_probe(struct tc956xmac_priv *priv, struct tc956xmac_resources *res)
-{
-#ifdef RBTC9563_3MA
-#ifdef RBTC9563_3DB
-	tc956x_GPIO_OutputConfigPin(priv, GPIO_12, 0);
-#else
-	tc956x_GPIO_OutputConfigPin(priv, GPIO_12, 1);
-	tc956x_GPIO_OutputConfigPin(priv, GPIO_13, 0);
-#endif
-#endif
-	return 0;
-}
-/**
- * tc956x_platform_probe
- * @priv: driver private structure
- * @res: tc956xmac resource pointer
- * Description: this is the platform specific function
- * returns 0 on success
- */
-int tc956x_platform_resume(struct tc956xmac_priv *priv)
-{
-#ifdef RBTC9563_3MA
-#ifdef RBTC9563_3DB
-		tc956x_GPIO_OutputConfigPin(priv, GPIO_12, 0);
-#else
-		tc956x_GPIO_OutputConfigPin(priv, GPIO_12, 1);
-		tc956x_GPIO_OutputConfigPin(priv, GPIO_13, 0);
-#endif
-#endif
 
-	return 0;
-}
 /**
  * tc956xmac_dvr_probe
  * @device: device pointer

@@ -2,6 +2,7 @@ CONFIG_TC956X_NET ?= m
 CONFIG_TC956X_PF ?= y
 CONFIG_TC956X_PCIE_GEN3_SETTING ?= y
 CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE ?= y
+CONFIG_TC956X_PLATFORM_SUPPORT ?= y
 
 # Common CFLAGS for all files in this directory
 ccflags-y := -DTC956X -Wmissing-prototypes
@@ -9,6 +10,7 @@ ccflags-y := -DTC956X -Wmissing-prototypes
 # Add CFLAGS based on Kconfig options
 ccflags-$(CONFIG_TC956X_PCIE_GEN3_SETTING)   += -DTC956X_PCIE_GEN3_SETTING
 ccflags-$(CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE) += -DTC956X_IOCTL_REG_RD_WR_ENABLE
+ccflags-$(CONFIG_TC956X_PLATFORM_SUPPORT) += -DCONFIG_TC956X_PLATFORM_SUPPORT
 ccflags-$(CONFIG_TC956X_MAGIC_PACKET_WOL_GPIO) += -DTC956X_MAGIC_PACKET_WOL_GPIO
 ccflags-$(CONFIG_TC956X_MAGIC_PACKET_WOL_CONF) += -DTC956X_MAGIC_PACKET_WOL_CONF
 
@@ -35,7 +37,9 @@ tc956x_pcie_eth-y := \
 	tc956x_pcie_logstat.o \
 	tc956x_pf_rsc_mng.o \
 	tc956x_pf_mbx_wrapper.o \
-	tc956x_pf_mbx.o
+	tc956x_pf_mbx.o \
+	tc956x_qcom.o \
+	tc956x_gpio.o
 
 # Define the object files for the VF driver composite module
 tc956x_vf_pcie_eth-y := \
@@ -74,6 +78,7 @@ default:
 		CONFIG_TC956X_PF=y \
 		CONFIG_TC956X_PCIE_GEN3_SETTING=y \
 		CONFIG_TC956X_IOCTL_REG_RD_WR_ENABLE=y \
+		CONFIG_TC956X_PLATFORM_SUPPORT=y \
 		modules
 
 clean:

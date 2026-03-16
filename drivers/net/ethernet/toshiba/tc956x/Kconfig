@@ -57,6 +57,14 @@ config TC956X_IOCTL_REG_RD_WR_ENABLE
 	  Enable IOCTL interface for register read/write operations.
 	  This is mainly for debugging purposes.
 
+config TC956X_PLATFORM_SUPPORT
+	bool "TC956X Platform-Specific Support"
+	default y
+	depends on TC956X_PF || TC956X_VF
+	help
+	  Enable platform-specific support for TC956X, such as GPIO control.
+	  This may be required for certain features like Wake-on-LAN.
+
 config TC956X_MAGIC_PACKET_WOL_GPIO
 	bool "Magic Packet WoL via GPIO"
 	depends on TC956X_PF

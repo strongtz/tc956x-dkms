@@ -1298,15 +1298,19 @@ int tc956x_platform_suspend(struct tc956xmac_priv *priv);
 int tc956x_platform_resume(struct tc956xmac_priv *priv);
 int tc956x_platform_port_interface_overlay(struct device *dev, struct tc956xmac_resources *res);
 #else
-int tc956x_platform_probe(struct tc956xmac_priv *priv, struct tc956xmac_resources *res);
+static inline int tc956x_platform_probe(struct tc956xmac_priv *priv, struct tc956xmac_resources *res) { return 0; }
 static inline int tc956x_platform_remove(struct tc956xmac_priv *priv) { return 0; }
 static inline int tc956x_platform_suspend(struct tc956xmac_priv *priv) { return 0; }
-int tc956x_platform_resume(struct tc956xmac_priv *priv);
+static inline int tc956x_platform_resume(struct tc956xmac_priv *priv) { return 0; }
 static inline int tc956x_platform_port_interface_overlay(struct device *dev, struct tc956xmac_resources *res) { return 0; }
 #endif
 
 int tc956x_GPIO_OutputConfigPin(struct tc956xmac_priv *priv, u32 gpio_pin, u8 out_value);
 int tc956x_gpio_restore_configuration(struct tc956xmac_priv *priv);
+
+#ifdef CONFIG_TC956X_PLATFORM_SUPPORT
+int tc956x_gpio_register(struct tc956xmac_priv *priv);
+#endif
 
 #ifdef TC956X_SRIOV_VF
 int tc956x_vf_get_fn_idx_from_int_sts(struct tc956xmac_priv *priv,
