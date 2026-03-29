@@ -3006,54 +3006,7 @@ static void tc956xmac_mac_flow_ctrl(struct tc956xmac_priv *priv, u32 duplex)
 			priv->pause, tx_cnt);
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 10, 0)
-static unsigned long tc956xmac_get_caps(struct phylink_config *config,
-	phy_interface_t interface)
-{
-	struct tc956xmac_priv *priv = netdev_priv(to_net_dev(config->dev));
-	unsigned long caps = MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
-	int max_speed = priv->plat->max_speed;
-
-	caps |= MAC_10HD | MAC_10FD | MAC_100HD | MAC_100FD | 
-		MAC_1000HD | MAC_1000FD;
-
-	if (priv->plat->port_interface == ENABLE_USXGMII_INTERFACE) {
-		caps &= ~(MAC_10HD | MAC_10FD | MAC_100HD | MAC_100FD | 
-			MAC_1000HD | MAC_1000FD);
-	}
-
-	if (priv->plat->port_interface == ENABLE_USXGMII_5G_INTERFACE) {
-		caps &= ~MAC_10000FD;
-	}
-
-	if (priv->plat->port_interface == ENABLE_USXGMII_2_5G_INTERFACE) {
-		caps &= ~(MAC_10000FD | MAC_5000FD);
-	}
-
-	if ((max_speed > 0) && (max_speed < 1000)) {
-		caps &= ~MAC_1000FD;
-	} else if (priv->plat->has_xgmac) {
-		if (!max_speed || (max_speed >= 2500))
-			caps |= MAC_2500FD;
-		if (!max_speed || (max_speed >= 5000))
-			caps |= MAC_5000FD;
-		if (!max_speed || (max_speed >= 10000))
-			caps |= MAC_10000FD;
-	}
-
-	if (priv->plat->tx_queues_to_use > 1) {
-#ifdef TC956X
-		caps &= ~(MAC_10HD | MAC_100HD | MAC_1000HD);
-#else
-		caps &= ~(MAC_10HD | MAC_100HD);
-#endif
-	}
-
-	return caps;
-}
-
-#else
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 7, 0)
 static void tc956xmac_validate(struct phylink_config *config,
 			    unsigned long *supported,
 			    struct phylink_link_state *state)
@@ -3156,7 +3109,21 @@ static void tc956xmac_validate(struct phylink_config *config,
 	bitmap_andnot(state->advertising, state->advertising, mask,
 			__ETHTOOL_LINK_MODE_MASK_NBITS);
 }
-#endif
+#else
+static unsigned long tc956xmac_mac_get_caps(struct phylink_config *config,
+							 phy_interface_t interface)
+{
+	struct tc956xmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+
+	priv->hw->link.caps &= ~(MAC_10HD | MAC_100HD | MAC_1000HD);
+	config->mac_capabilities = priv->hw->link.caps;
+
+	if (priv->plat->max_speed)
+		phylink_limit_mac_speed(config, priv->plat->max_speed);
+
+	return config->mac_capabilities;
+}
+#endif /* KERNEL_VERSION(6,7,0) */
 #endif  /* TC956X_SRIOV_VF */
 
 #ifndef TC956X_SRIOV_VF
@@ -4305,10 +4272,10 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 }
 
 static const struct phylink_mac_ops tc956xmac_phylink_mac_ops = {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 10, 0)
-	.mac_get_caps = tc956xmac_get_caps,
-#else
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 7, 0)
 	.validate = tc956xmac_validate,
+#else
+	.mac_get_caps = tc956xmac_mac_get_caps,
 #endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0)

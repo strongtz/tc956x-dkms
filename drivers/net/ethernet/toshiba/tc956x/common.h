@@ -2887,6 +2887,7 @@ extern const struct tc956xmac_hwtimestamp tc956xmac_ptp;
 extern const struct tc956xmac_mode_ops dwmac4_ring_mode_ops;
 
 struct mac_link {
+	u32 caps;
 	u32 speed_mask;
 	u32 speed10;
 	u32 speed100;
