@@ -4588,7 +4588,7 @@ skip_module_load:
 	/* Enable or disable EEE Advertisement based on eee_enabled settings which might be set using module param */
 	edata.eee_enabled = priv->eee_enabled;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0)
-	linkmode_zero(edata.advertised);
+	bitmap_zero(edata.advertised, __ETHTOOL_LINK_MODE_MASK_NBITS);
 #else
 	edata.advertised = 0;
 #endif

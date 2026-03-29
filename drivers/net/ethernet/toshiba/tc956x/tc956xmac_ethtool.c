@@ -1880,6 +1880,9 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 #ifdef TC956X_5_G_2_5_G_EEE_SUPPORT
 	int cap2p5, old_adv_2p5, adv_2p5 = 0;
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
+	int tmp;
+#endif
 	if (!phydev->drv)
 		return -EIO;
 
@@ -1900,7 +1903,12 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 		adv = !data->advertised ? cap :
 		      ethtool_adv_to_mmd_eee_adv_t(data->advertised) & cap;
 		/* Mask prohibited EEE modes */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
+		ethtool_convert_link_mode_to_legacy_u32(&tmp, phydev->eee_disabled_modes);
+		adv &= ~tmp;
+#else
 		adv &= ~phydev->eee_broken_modes;
+#endif
 	}
 	KPRINT_INFO("%s --- adv:0x%x\n", __func__, adv);
 
@@ -1939,7 +1947,12 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 		adv_2p5 = !data->advertised ? cap2p5 :
 		      ethtool_adv_to_mmd_eee_adv_t(data->advertised) & cap2p5;
 		/* Mask prohibited EEE modes */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
+		ethtool_convert_link_mode_to_legacy_u32(&tmp, phydev->eee_disabled_modes);
+		adv_2p5 &= ~tmp;
+#else
 		adv_2p5 &= ~phydev->eee_broken_modes;
+#endif
 	}
 	KPRINT_INFO("%s --- adv_2p5:0x%x\n", __func__, adv_2p5);
 
@@ -1965,19 +1978,6 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 
 #ifdef TC956X_5_G_2_5_G_EEE_SUPPORT
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
-static inline u16 tc956x_ethtool_adv_to_mmd_eee_adv2_t(const unsigned long *adv)
-{
-	u16 reg = 0;
-
-	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, adv))
-		reg |= MDIO_EEE_2_5GT;
-	if (linkmode_test_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT, adv))
-		reg |= MDIO_EEE_5GT;
-
-	return reg;
-}
-#else
 static inline u16 tc956x_ethtool_adv_to_mmd_eee_adv2_t(u32 adv)
 {
 	u16 reg = 0;
@@ -1989,7 +1989,6 @@ static inline u16 tc956x_ethtool_adv_to_mmd_eee_adv2_t(u32 adv)
 
 	return reg;
 }
-#endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
 int phy_ethtool_set_eee_2p5(struct phy_device *phydev, struct ethtool_keee *data)
@@ -1998,6 +1997,9 @@ int phy_ethtool_set_eee_2p5(struct phy_device *phydev, struct ethtool_eee *data)
 #endif
 {
 	int ret;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
+	u32 adv, tmp;
+#endif
 	int cap2p5, old_adv_2p5, adv_2p5 = 0;
 
 	if (!phydev->drv)
@@ -2014,25 +2016,14 @@ int phy_ethtool_set_eee_2p5(struct phy_device *phydev, struct ethtool_eee *data)
 		return old_adv_2p5;
 	/* EEE advertise checking API corrected for 2.5G and 5G speeds. */
 	if (data->eee_enabled) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,15,0)
-		adv_2p5 = tc956x_ethtool_adv_to_mmd_eee_adv2_t(data->advertised) & cap2p5;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
+		if (!ethtool_convert_link_mode_to_legacy_u32(&adv, data->advertised))
+			phydev_warn(phydev, "Overflow while converting advertised EEE link modes\n");
+		adv_2p5 = !(adv) ? cap2p5 : tc956x_ethtool_adv_to_mmd_eee_adv2_t(adv) & cap2p5;
 		/* Mask prohibited EEE modes */
-		adv_2p5 &= ~(tc956x_ethtool_adv_to_mmd_eee_adv2_t(phydev->eee_disabled_modes));
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
-		adv_2p5 = tc956x_ethtool_adv_to_mmd_eee_adv2_t(data->advertised) & cap2p5;
-		/* Mask prohibited EEE modes */
-		/* In kernels < 6.15, eee_broken_modes is a u32, not a linkmode bitmap.
-		 * We need to convert it to a temporary bitmap to pass to the helper.
-		 */
-		{
-			unsigned long broken_modes_bmap[__ETHTOOL_LINK_MODE_MASK_NBITS / BITS_PER_LONG] = {0};
-			if (phydev->eee_broken_modes & TC956X_ADVERTISED_2500baseT_Full)
-				linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, broken_modes_bmap);
-			if (phydev->eee_broken_modes & TC956X_ADVERTISED_5000baseT_Full)
-				linkmode_set_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT, broken_modes_bmap);
-
-			adv_2p5 &= ~(tc956x_ethtool_adv_to_mmd_eee_adv2_t(broken_modes_bmap));
-		}
+		if (!ethtool_convert_link_mode_to_legacy_u32(&tmp, phydev->eee_disabled_modes))
+			phydev_warn(phydev, "Overflow while converting disabled EEE link modes\n");
+		adv_2p5 &= ~tmp;
 #else
 		adv_2p5 = !data->advertised ? cap2p5 :
 		      tc956x_ethtool_adv_to_mmd_eee_adv2_t(data->advertised) & cap2p5;
