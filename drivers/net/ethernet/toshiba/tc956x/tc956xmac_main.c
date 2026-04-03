@@ -190,6 +190,8 @@
  *  VERSION     : 06-00-00
  *  12 Mar 2026 : 1. Fixed compilation issue for disable of CONFIG_PCI_IOV macro
  *  VERSION     : 06-00-01
+ *  03 Apr 2026 : 1. TC command support enabled only for Kernel versions 5.4, 6.1 and 6.6
+ *  VERSION     : 06-00-02
  */
 
 #include <linux/clk.h>
@@ -14248,6 +14250,8 @@ static int tc956xmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	return ret;
 }
 
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)) ||\
+	((LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 0))))
 static int tc956xmac_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
 				    void *cb_priv)
 {
@@ -14301,6 +14305,7 @@ static int tc956xmac_setup_tc(struct net_device *ndev, enum tc_setup_type type,
 		return -EOPNOTSUPP;
 	}
 }
+#endif
 
 static u16 tc956xmac_select_queue(struct net_device *dev, struct sk_buff *skb,
 			       struct net_device *sb_dev)
@@ -14765,7 +14770,11 @@ static const struct net_device_ops tc956xmac_vf_netdev_ops = {
 #else
 	.ndo_do_ioctl = tc956xmac_ioctl,
 #endif
+	/* Disable TC command support for Kernel versions other than 5.4, 6.1 and 6.6 */
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)) ||\
+	  ((LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 0))))
 	.ndo_setup_tc = tc956xmac_setup_tc,
+#endif
 	.ndo_select_queue = tc956xmac_select_queue,
 #ifdef TC956X_UNSUPPORTED_UNTESTED_FEATURE
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -15584,8 +15593,14 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 #endif
 
 	ret = tc956xmac_tc_init(priv, NULL);
+	/* TC commands are tested only for kernel versions 5.4, 6.1 and 6.6
+	 * For other kernel versions, dont enable TC support
+	 */
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)) ||\
+ ((LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 0))))
 	if (!ret)
 		ndev->hw_features |= NETIF_F_HW_TC;
+#endif
 
 	/* Enable TSO module if any Queue TSO is Enabled */
 	for (queue = 0; queue < MTL_MAX_TX_QUEUES; queue++) {

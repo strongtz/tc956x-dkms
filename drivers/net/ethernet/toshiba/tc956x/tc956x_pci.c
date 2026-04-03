@@ -224,6 +224,8 @@
  *  12 Mar 2026 : 1. Fixed compilation issue for disable of CONFIG_PCI_IOV macro
  *                2. Version update
  *  VERSION     : 06-00-01
+ *  03 Apr 2026 : 1. Version update
+ *  VERSION     : 06-00-02
  */
 
 #include <linux/clk-provider.h>
@@ -579,7 +581,7 @@ static unsigned int mac1_axi_rd_osr_lmt = 31;
 
 static unsigned int mac0_axi_blen;
 static unsigned int mac1_axi_blen;
-static const struct tc956x_version tc956x_drv_version = {0, 6, 0, 0, 0, 1};
+static const struct tc956x_version tc956x_drv_version = {0, 6, 0, 0, 0, 2};
 int tc956xmac_pm_usage_counter; /* Device Usage Counter */
 int tc956x_dsp_count;
 #ifdef TC956X_SRIOV_PF
