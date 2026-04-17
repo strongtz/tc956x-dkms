@@ -24,7 +24,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: debain-package
+        name: debian-package
         path: "*.deb"
 
   test-archlinux-lts:
