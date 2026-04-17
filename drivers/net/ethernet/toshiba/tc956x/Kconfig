@@ -43,7 +43,7 @@ config TC956X_VF
 
 config TC956X_PCIE_GEN3_SETTING
 	bool "PCIe Gen3 Settings"
-	default y
+	default n
 	depends on TC956X_PF || TC956X_VF
 	help
 	  Set default PCIe speed to Gen3 for upstream and all downstream ports.
