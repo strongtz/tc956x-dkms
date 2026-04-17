@@ -33,8 +33,9 @@ static int tc956x_gpio_direction_output(struct gpio_chip *chip,
 static void tc956x_gpio_set(struct gpio_chip *chip, unsigned int offset,
 			    int value)
 {
-	return tc956x_GPIO_OutputConfigPin(to_tc956x_gpio(chip)->priv,
+    tc956x_GPIO_OutputConfigPin(to_tc956x_gpio(chip)->priv,
 					   offset, value ? 1 : 0);
+	return;
 }
 #else
 static int tc956x_gpio_set(struct gpio_chip *chip, unsigned int offset,
