@@ -6163,8 +6163,11 @@ static void tc956xmac_dma_interrupt(struct tc956xmac_priv *priv)
 	u32 channels_to_check = tx_channel_count > rx_channel_count ?
 				tx_channel_count : rx_channel_count;
 	u32 chan;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0)
 	int status[MAX(MTL_MAX_TX_QUEUES, MTL_MAX_RX_QUEUES)];
-
+#else
+	int status[max_t(u32, MTL_MAX_TX_QUEUES, MTL_MAX_RX_QUEUES)];
+#endif
 	/* Make sure we never check beyond our status buffer. */
 	if (WARN_ON_ONCE(channels_to_check > ARRAY_SIZE(status)))
 		channels_to_check = ARRAY_SIZE(status);
