@@ -257,6 +257,9 @@ int tc956x_platform_suspend(struct tc956xmac_priv *priv)
 	int ret = 0;
 
 	if (priv->wolopts) {
+		if (priv->wol_irq <= 0)
+			return 0;
+
 		ret = enable_irq_wake(priv->wol_irq);
 		if (ret)
 			dev_err(priv->device,
@@ -277,6 +280,9 @@ int tc956x_platform_resume(struct tc956xmac_priv *priv)
 	int ret = 0;
 
 	if (priv->wolopts) {
+		if (priv->wol_irq <= 0)
+			return 0;
+
 		ret = disable_irq_wake(priv->wol_irq);
 		if (ret)
 			dev_err(priv->device,
