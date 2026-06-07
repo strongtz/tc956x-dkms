@@ -3658,7 +3658,15 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 	res.irq = pdev->irq;
 	res.lpi_irq = pdev->irq;
 
-	plat->bus_id = ((pdev->bus->number<<4) | res.port_num);
+	/*
+	 * Include the PCI domain so the MDIO bus id stays unique when two
+	 * TC956x devices sit on the same bus number in different domains
+	 * (e.g. cascaded behind separate root ports). Without the domain both
+	 * would derive the same bus_id and the second MDIO bus registration
+	 * fails with a duplicate sysfs name.
+	 */
+	plat->bus_id = ((pci_domain_nr(pdev->bus) << 12) |
+			(pdev->bus->number << 4) | res.port_num);
 	res.pci_bdf = pci_dev_id(pdev);
 
 	dev_info(&(pdev->dev), "Port%d Bus%x BDF is 0x%x\n", res.port_num, pdev->bus->number, res.pci_bdf);
