@@ -87,8 +87,37 @@ static int tc956x_phy_power_off(struct tc956xmac_priv *priv)
 int tc956x_platform_port_interface_overlay(struct device *dev,
 					   struct tc956xmac_resources *res)
 {
-	/* Currently unused */
-	return 0;
+	const char *phy_mode;
+
+	if (!dev->of_node)
+		return 0;
+
+	if (of_property_read_string(dev->of_node, "phy-mode", &phy_mode) &&
+	    of_property_read_string(dev->of_node, "phy-connection-type", &phy_mode))
+		return 0;
+
+	if (!strcmp(phy_mode, "usxgmii")) {
+		res->port_interface = ENABLE_USXGMII_10G_INTERFACE;
+	} else if (!strcmp(phy_mode, "10gbase-r")) {
+		res->port_interface = ENABLE_XFI_INTERFACE;
+	} else if (!strcmp(phy_mode, "sgmii")) {
+		res->port_interface = ENABLE_SGMII_INTERFACE;
+	} else if (!strcmp(phy_mode, "2500base-x")) {
+		res->port_interface = ENABLE_2500BASE_X_INTERFACE;
+	} else if (!strcmp(phy_mode, "rgmii")) {
+		res->port_interface = ENABLE_RGMII_INTERFACE;
+	} else if (!strcmp(phy_mode, "rgmii-id")) {
+		res->port_interface = ENABLE_RGMII_ID_INTERFACE;
+	} else {
+		dev_warn(dev, "Unsupported phy-mode %s for TC956x interface overlay\n",
+			 phy_mode);
+		return 0;
+	}
+
+	dev_info(dev, "TC956x interface overlay from phy-mode %s: %u\n",
+		 phy_mode, res->port_interface);
+
+	return 1;
 }
 
 static int tc956x_platform_of_parse(struct device *dev,
