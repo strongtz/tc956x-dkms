@@ -25,12 +25,18 @@ struct tc956x_qcom_priv {
 
 static int tc956x_phy_reset_assert(struct tc956xmac_priv *priv)
 {
+	if (!to_qpriv(priv)->phy_reset_gpio)
+		return 0;
+
 	gpiod_set_value_cansleep(to_qpriv(priv)->phy_reset_gpio, 1);
 	return 0;
 }
 
 static int tc956x_phy_reset_deassert(struct tc956xmac_priv *priv)
 {
+	if (!to_qpriv(priv)->phy_reset_gpio)
+		return 0;
+
 	gpiod_set_value_cansleep(to_qpriv(priv)->phy_reset_gpio, 0);
 	return 0;
 }
@@ -125,8 +131,8 @@ static int tc956x_platform_of_parse(struct device *dev,
 {
 	int ret;
 
-	qpriv->phy_reset_gpio = devm_gpiod_get(dev, "phy-reset",
-					       GPIOD_OUT_HIGH);
+	qpriv->phy_reset_gpio = devm_gpiod_get_optional(dev, "phy-reset",
+							GPIOD_OUT_HIGH);
 	if (IS_ERR(qpriv->phy_reset_gpio))
 		return dev_err_probe(dev, PTR_ERR(qpriv->phy_reset_gpio),
 				     "Failed to get phy-reset-gpios\n");
